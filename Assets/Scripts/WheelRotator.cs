@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class WheelRotator : MonoBehaviour
 {
@@ -11,17 +14,25 @@ public class WheelRotator : MonoBehaviour
     [SerializeField] private float angleDispersion;
 
     [SerializeField] private List<Collider2D> sectorColliders;
+    
+    [SerializeField] private Button button;
 
     private int _targetSector;
 
-    void Start()
+    private void Start()
     {
+        button.onClick.AddListener(delegate
+        {
+            TriggerRotation(Random.Range(0, sectorColliders.Count - 1),
+                Random.Range(minRotationCycles, maxRotationCycles + 1),
+                Random.Range(minRotationTime, maxRotationTime));
+        });
     }
 
-    void Update()
+    private void Update()
     {
         _targetSector = 0;
-
+        
         if (Input.GetMouseButtonDown(1))
         {
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -72,13 +83,18 @@ public class WheelRotator : MonoBehaviour
             {
                 _targetSector = 6;
             }
-
-            if (_targetSector > 0)
-            {
-                Debug.Log("Rotation to sector " + _targetSector + " - triggered by keypad");
-                TriggerRotation(_targetSector, Random.Range(minRotationCycles, maxRotationCycles + 1),
-                    Random.Range(minRotationTime, maxRotationTime));
-            }
+        }
+        
+        if (_targetSector > 0)
+        {
+            Debug.Log("Rotation to sector " + _targetSector + " - triggered by keypad");
+            TriggerRotation(_targetSector, Random.Range(minRotationCycles, maxRotationCycles + 1),
+                Random.Range(minRotationTime, maxRotationTime));
+        }
+        
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
